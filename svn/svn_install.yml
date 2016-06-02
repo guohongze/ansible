@@ -1,0 +1,21 @@
+- hosts: localhost
+  remote_user: root
+  gather_facts: false
+  tasks:
+  - name: install svn server
+    yum: name=subversion state=latest
+  - name: rm /etc/init.d/svnserve
+    command: rm -rf /etc/init.d/svnserve
+  - name: copy svn to /etc/init.d/
+    copy: src=/data/ansible/svn/files/svn dest=/etc/init.d/svn mode=0744
+  - name: mk svn dir
+    command: mkdir -p {{item}}
+    with_items:
+        - /data/svn
+        - /data/svn/conf
+  - name: copy autorized files
+    copy: src=/data/ansible/svn/files/authz dest=/data/svn/conf/authz
+  - name: copy pasword files
+    copy: src=/data/ansible/svn/files/passwd dest=/data/svn/conf/passwd
+  - name: reboot svn server
+    command: service svn restart
