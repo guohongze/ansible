@@ -1,0 +1,80 @@
+- hosts: all
+  remote_user: root
+  gather_facts: false
+  tasks:
+  - name: hostname set
+    hostname: name={{host_name}}
+  - name: service stop
+    service: name={{item}} state=stopped
+    with_items:
+        - iptables
+        - ip6tables
+        - postfix
+  - name: chkconfig iptables off
+    command: chkconfig {{item}} off
+    with_items:
+        - iptables
+        - ip6tables
+        - postfix
+  - name: install yum-fastestmirror
+    yum: name=yum-fastestmirror state=latest
+  - name: install yum-priorities
+    yum: name=yum-priorities state=latest
+  - name: install epel-release
+    yum: name=epel-release state=latest
+  - name: import epel pki
+    command: rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-6
+  - name: upgrade all packages
+    yum: name=* state=latest
+  - name: yum install tools
+    yum: name={{ item }} state=latest
+    with_items:
+        - git
+        - bridge-utils
+        - bind-utils
+        - bison
+        - flex
+        - libxml2
+        - libxml2-devel
+        - libselinux-python
+        - lrzsz
+        - gcc
+        - screen
+        - wget
+        - vim
+        - unzip
+        - ntpdate
+        - dmidecode 
+        - make 
+        - autoconf 
+        - automake 
+        - cmake
+        - gcc-c++
+        - openssl 
+        - openssl-devel 
+        - ncurses 
+        - ncurses-devel 
+        - libaio 
+        - libaio-devel 
+        - bind-utils 
+        - lvm2 
+        - parted 
+        - setuptool 
+        - ntsysv 
+        - lvm2-devel
+  - name: disabled selinux
+    selinux: state=disabled
+  - name: linux kernel optmise
+    copy: src=/data/ansible/init/files/sysctl.conf dest=/etc/sysctl.conf
+  - name: ali ssh config change
+    copy: src=/data/ansible/init/files/ssh_config dest=/etc/ssh_config
+  - name: ali ssh config change
+    copy: src=/data/ansible/init/files/sshd_config dest=/etc/sshd_config
+  - name: copy init script file
+    copy: src=/data/ansible/init/files/centos6_init.sh dest=/tmp/centos6_init.sh mode=0744
+  - name: exec optimise scripts
+    shell: /tmp/centos6_init.sh
+  - name: rm init_file
+    command: rm -rf /tmp/centos6_init.sh        
+  - name: reboot this machine
+    command: reboot     

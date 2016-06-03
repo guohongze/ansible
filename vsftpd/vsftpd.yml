@@ -1,0 +1,16 @@
+- hosts: atest
+  remote_user: root
+  gather_facts: false
+  tasks:
+  - name: install vsftpd server
+    yum: name=vsftpd state=latest
+  - name: copy ftp config
+    copy: src=/data/ansible/vsftpd/files/vsftpd.conf dest=/etc/vsftpd/vsftpd.conf mode=0644
+  - name: mk ftp dir
+    command: mkdir -p /data/users
+  - name: create ftpuser ftpadmin
+    user: name=ftpadmin shell=/sbin/nologin groups=ftp append=yes home=/data/ftproot
+  - name: set password
+    shell: /bin/echo ftp#$b2c4G |/usr/bin/passwd --stdin ftpadmin
+  - name: restart ftpserver
+    service: name=vsftpd state=restarted
