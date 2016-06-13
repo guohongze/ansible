@@ -1,0 +1,21 @@
+---
+- name: yum install etcd
+  yum: name=etcd state=latest
+- name: copy systemd file
+  copy: src=etcd.service dest=/usr/lib/systemd/system/etcd.service mode=0644
+- name: template conf file
+  template: src=etcd.j2 dest=/etc/etcd/etcd.conf
+- name: start etcd
+  service: name=etcd state=stopped
+- name: template to /tmp/etcd_cluster.sh
+  template: src=etcd_cluster.j2 dest=/tmp/etcd_cluster.sh mode=0744
+- name: exec etcd init shell
+  shell: /tmp/etcd_cluster.sh
+- name: daemon-reload
+  command: systemctl daemon-reload
+- name: enable etcd
+  command: chkconfig etcd on
+#- name: kill etcd init scripts
+#  command: /usr/bin/pkill etcd
+- name: start etcd
+  command: service etcd start

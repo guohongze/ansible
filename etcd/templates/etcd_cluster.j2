@@ -1,0 +1,9 @@
+#!/bin/bash
+/usr/bin/etcd --name {{host_name}} --initial-advertise-peer-urls http://{{ansible_host_ip}}:2380 \
+	--data-dir=/var/lib/etcd/default.etcd \
+  --listen-peer-urls http://0.0.0.0:2380 \
+  --listen-client-urls http://0.0.0.0:2379 \
+  --advertise-client-urls http://{{ansible_host_ip}}:2379 \
+  --initial-cluster-token etcd-cluster-1 \
+  --initial-cluster {{node01_name}}=http://{{node01_ip}}:2380,{{node02_name}}=http://{{node02_ip}}:2380  \
+  --initial-cluster-state new &

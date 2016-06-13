@@ -1,0 +1,5 @@
+- hosts: etcd
+  remote_user: root
+  gather_facts: false
+  roles:
+     - etcd

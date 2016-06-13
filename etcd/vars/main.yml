@@ -1,0 +1,5 @@
+---
+node01_name : 'etcd01'
+node02_name : 'etcd02'
+node01_ip : '192.168.47.119'
+node02_ip : '192.168.47.120'
